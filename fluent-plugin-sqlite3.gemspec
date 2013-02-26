@@ -9,8 +9,6 @@ Gem::Specification.new do |s|
   s.files       = ["lib/fluent/plugin/out_sqlite3.rb"]
   s.homepage    = 'https://github.com/tmtk75/fluent-plugin-sqlite3.git'
 
-  gem.add_development_dependency "fluentd"
-  gem.add_development_dependency "sqlite3"
-  gem.add_runtime_dependency "fluentd"
-  gem.add_runtime_dependency "sqlite3"
+  s.add_dependency "fluentd"
+  s.add_dependency "sqlite3"
 end
