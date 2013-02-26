@@ -1,9 +1,10 @@
 class Fluent::Sqlite3Output < Fluent::BufferedOutput
   Fluent::Plugin.register_output('sqlite3', self)
 
-  config_param :host, :string
+  config_param :path, :string
 
   def initialize
+    $log.debug "initialized"
   end
 
   def configure(conf)
