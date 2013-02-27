@@ -1,19 +1,18 @@
-require "rubygems"
-require "bundler"
+require 'fluent/test'
+require 'fluent/plugin/out_sqlite3'
 
-Bundler.setup(:default, :development)
+$log = Object.new.instance_eval {|obj| def method_missing(method, *args); end; self }
 
 class Fluent::Sqlite3OutputTest < Test::Unit::TestCase
   def setup
     Fluent::Test.setup
-    #require 'fluent/plugin/out_sqlite3'
   end
   
   CONFIG = %[
     path a.db
   ]
 
-  def create_deiver(conf=CONFIG, tag='test')
+  def create_driver(conf=CONFIG, tag='test')
     Fluent::Test::BufferedOutputTestDriver.new(Fluent::Sqlite3Output, tag) {
       def start
       end
@@ -25,7 +24,6 @@ class Fluent::Sqlite3OutputTest < Test::Unit::TestCase
 
   def test_write
     d = create_driver
-    t = emit_documents(d)
     collection_name, documents = d.run
     assert_equal [{}, {}], documents
     assert_equal 'test', collection_name
