@@ -3,9 +3,10 @@ require "sqlite3"
 class Fluent::Sqlite3Output < Fluent::BufferedOutput
   Fluent::Plugin.register_output('sqlite3', self)
 
-  config_param :path,    :string
-  config_param :table,   :string, :default => nil
-  config_param :columns, :string, :default => nil
+  config_param :path,     :string
+  config_param :table,    :string, :default => nil
+  config_param :columns,  :string, :default => nil
+  config_param :excludes, :string, :default => nil
 
   def initialize
     super
@@ -14,13 +15,16 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   def configure(conf)
     super
     @type = conf["type"]
+    if (@table and not(@columns)) or (not(@table) and @columns)
+      raise "strict mode requires table and columns parameters"
+    end
   end
   
   def start
     super
     @db = ::SQLite3::Database.new @path
     @stmts = {}
-    if @table and @columns
+    if @table
       cols = @columns.split(/ ?, ?/).map {|e| ":#{e}"}.join(",")
       @stmts[@table] = @db.prepare "INSERT INTO #{@table}(#{@columns}) VALUES(#{cols})"
     end
@@ -54,6 +58,11 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
         @db.execute "CREATE TABLE IF NOT EXISTS #{table} (id INTEGER PRIMARY KEY AUTOINCREMENT,#{cols})"
         @stmts[table] = @db.prepare (a = to_insert(table, cols))
         $log.debug "create a new table, #{table.upcase} (it may have been already created)"
+      end
+      if @excludes
+        @excludes.split(",").each do |e|
+          record.delete e
+        end
       end
       @stmts[table].execute record
     end
