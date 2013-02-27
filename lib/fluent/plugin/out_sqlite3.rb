@@ -4,8 +4,8 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   Fluent::Plugin.register_output('sqlite3', self)
 
   config_param :path,    :string
-  config_param :table,   :string
-  config_param :columns, :string
+  config_param :table,   :string, :default => nil
+  config_param :columns, :string, :default => nil
 
   def initialize
     super
@@ -13,9 +13,6 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
 
   def configure(conf)
     super
-    @path     = conf['path']
-    @table    = conf['table']
-    @columns  = conf['columns']
   end
   
   def start
