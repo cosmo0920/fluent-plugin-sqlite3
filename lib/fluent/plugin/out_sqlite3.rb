@@ -3,7 +3,9 @@ require "sqlite3"
 class Fluent::Sqlite3Output < Fluent::BufferedOutput
   Fluent::Plugin.register_output('sqlite3', self)
 
-  config_param :path, :string
+  config_param :path,    :string
+  config_param :table,   :string
+  config_param :columns, :string
 
   def initialize
     super
@@ -11,15 +13,22 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
 
   def configure(conf)
     super
-    @path = conf['path']
+    @path     = conf['path']
+    @table    = conf['table']
+    @columns  = conf['columns']
   end
   
   def start
     super
-    $log.debug "path: ", @path
     @db = ::SQLite3::Database.new @path
-    @stmt = @db.prepare "INSERT INTO aaa(id) VALUES(:id)"
+    cols = _columns.map {|e| ":#{e}"}.join(",")
+    @stmt = @db.prepare "INSERT INTO #{@table}(#{@columns}) VALUES(#{cols})"
   end
+
+  def _columns
+    @columns.split(/ ?, ?/)
+  end
+  private :_columns
   
   def shutdown
     super
@@ -35,9 +44,8 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   def write(chunk)
     chunk.msgpack_each do |tag, time, record|
       #$log.debug "tag: ", tag, ", time: ", time, ", record: ", record
-      #@stmt.bind_params :id, data.length
-      r = @stmt.execute id: tag.length
-      #$log.debug r
+      @stmt.execute record
+      $log.debug record
     end
   end
 end
