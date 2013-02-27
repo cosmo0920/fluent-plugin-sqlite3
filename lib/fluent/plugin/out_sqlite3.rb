@@ -21,7 +21,7 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
     @db = ::SQLite3::Database.new @path
     @stmts = {}
     if @table and @columns
-      cols = _columns.map {|e| ":#{e}"}.join(",")
+      cols = @columns.split(/ ?, ?/).map {|e| ":#{e}"}.join(",")
       @stmts[@table] = @db.prepare "INSERT INTO #{@table}(#{@columns}) VALUES(#{cols})"
     end
   end
