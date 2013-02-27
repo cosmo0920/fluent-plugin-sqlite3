@@ -44,10 +44,14 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
 
   def write(chunk)
     chunk.msgpack_each do |tag, time, record|
+      if record.keys.length == 0
+        $log.warn "no any keys for #{tag}"
+        return
+      end
       table = (@table or tag.slice(@type.length + 1, tag.length))
       unless @stmts[table]
         cols = record.keys.join ","
-        @db.execute "CREATE TABLE IF NOT EXISTS #{table} (#{cols})"
+        @db.execute "CREATE TABLE IF NOT EXISTS #{table} (id INTEGER PRIMARY KEY AUTOINCREMENT,#{cols})"
         @stmts[table] = @db.prepare (a = to_insert(table, cols))
         $log.debug "create a new table, #{table.upcase} (it may have been already created)"
       end
