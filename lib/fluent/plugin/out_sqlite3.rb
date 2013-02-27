@@ -18,31 +18,26 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
     super
     $log.debug "path: ", @path
     @db = ::SQLite3::Database.new @path
+    @stmt = @db.prepare "INSERT INTO aaa(id) VALUES(:id)"
   end
   
   def shutdown
     super
     $log.debug "shutdown"
+    @stmt.close
+    @db.close
   end
 
   def format(tag, time, record)
-    #$log.debug "tag: ", tag
-    #$log.debug "time: ", time
-    #$log.debug "record: ", record
-    [tag, time, record].to_json + "\n"
-  end
-
-  def client
-    $log.debug "client"
+    [tag, time, record].to_msgpack
   end
 
   def write(chunk)
-    data = chunk.read
-    #$log.debug "chunk: ", chunk
-    $log.debug "data: ", data
-    stmt = @db.prepare "INSERT INTO aaa(id) VALUES(:id)"
-    #stmt.bind_params :id, data.length
-    r = stmt.execute id: data.length
-    $log.debug r
+    chunk.msgpack_each do |tag, time, record|
+      #$log.debug "tag: ", tag, ", time: ", time, ", record: ", record
+      #@stmt.bind_params :id, data.length
+      r = @stmt.execute id: tag.length
+      #$log.debug r
+    end
   end
 end
