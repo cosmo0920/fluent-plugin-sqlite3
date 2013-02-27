@@ -5,9 +5,56 @@ Fluent::Sqlite3Output
 ---------------------
 <img src='https://raw.github.com/fluent/website/master/logos/fluentd2.png' width='176px'/>
 
-Required gems
-
+### Required gems
 - sqlite3
+
+
+Getting started
+---------------
+Add a following directive to fluent.conf and launch fluentd.
+
+    <match sqlite3.**>
+      type sqlite3
+      path test.db
+    </match>
+
+Then run next.
+
+    echo '{"name":"Jhon","age":24}' | fluent-cat sqlite3.persons
+    echo '{"name":"Mike","age":27}' | fluent-cat sqlite3.persons
+
+Let's see the database.
+
+    sqlite3 test.db "select * from persons"
+    1|Jhon|24
+    2|Mike|27
+
+### Ad hoc mode
+[Getting started](#getting-started) is in `ad hoc mode`.
+
+- tables are created when it's needed
+- table names are the 2nd later part of tag, so don't contain illegal characters for table name
+- primary key is id and auto increment
+- column names are corresponding to all keys for given json
+
+
+### Strict mode
+
+If a schema you use is already fixed, you can use `strict mode`.
+
+In the case, `table` and `columns` parameters should be used.
+
+    <match sqlite3.**>
+      type    sqlite3
+      path    test.db
+      table   persons
+      columns name, age, country
+    </match>
+
+
+### Optional parameters
+
+- `excludes`: is in order to filter out some keys you don't need to insert.
 
 
 Configuration
