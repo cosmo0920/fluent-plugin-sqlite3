@@ -21,7 +21,8 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
     @db = ::SQLite3::Database.new @path
     @stmts = {}
     if @table and @columns
-      @stmts[@table] = @db.prepare to_insert(@table, @columns)
+      cols = _columns.map {|e| ":#{e}"}.join(",")
+      @stmts[@table] = @db.prepare "INSERT INTO #{@table}(#{@columns}) VALUES(#{cols})"
     end
   end
 
@@ -33,7 +34,7 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   def shutdown
     super
     $log.debug "shutdown"
-    @stmt.close
+    @stmts.each {|k,v| v.close}
     @db.close
   end
 
