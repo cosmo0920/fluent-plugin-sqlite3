@@ -48,7 +48,7 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
         cols = record.keys.join ","
         @db.execute "CREATE TABLE IF NOT EXISTS #{table} (#{cols})"
         @stmts[table] = @db.prepare (a = to_insert(table, cols))
-        $log.debug "create a new table, #{table.upcase}"
+        $log.debug "create a new table, #{table.upcase} (it may have been already created)"
       end
       @stmts[table].execute record
     end
