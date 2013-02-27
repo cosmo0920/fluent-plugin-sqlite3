@@ -26,9 +26,10 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   end
 
   def format(tag, time, record)
-    $log.debug "tag: ", tag
-    $log.debug "time: ", time
-    $log.debug "record: ", record
+    #$log.debug "tag: ", tag
+    #$log.debug "time: ", time
+    #$log.debug "record: ", record
+    [tag, time, record].to_json + "\n"
   end
 
   def client
@@ -36,6 +37,12 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   end
 
   def write(chunk)
-    $log.debug "chunk: ", chunk
+    data = chunk.read
+    #$log.debug "chunk: ", chunk
+    $log.debug "data: ", data
+    stmt = @db.prepare "INSERT INTO aaa(id) VALUES(:id)"
+    #stmt.bind_params :id, data.length
+    r = stmt.execute id: data.length
+    $log.debug r
   end
 end
