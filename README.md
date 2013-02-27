@@ -54,7 +54,8 @@ In the case, `table` and `columns` parameters should be used.
 
 ### Optional parameters
 
-- `excludes`: is in order to filter out some keys you don't need to insert.
+- `includes`: is in order to insert the columns you need
+- `excludes`: is in order to filter out some keys you don't need to insert
 
 
 Configuration
@@ -81,6 +82,8 @@ Configuration
       ## has "name" and "age" columns.
       ## The primary key is "id" which is AUTOINCREMENT.
 
+      ## includes keys of json when inserting a new record
+      #includes name, eye
       ## excludes keys of json when inserting a new record
       #excludes hair, eye
 
