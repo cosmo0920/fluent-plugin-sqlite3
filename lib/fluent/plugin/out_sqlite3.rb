@@ -6,6 +6,7 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   config_param :path,     :string
   config_param :table,    :string, :default => nil
   config_param :columns,  :string, :default => nil
+  config_param :includes, :string, :default => nil
   config_param :excludes, :string, :default => nil
 
   def initialize
@@ -19,19 +20,21 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
       raise "strict mode requires table and columns parameters"
     end
   end
+
+  DELIMITER = / *, */
   
   def start
     super
     @db = ::SQLite3::Database.new @path
     @stmts = {}
     if @table
-      cols = @columns.split(/ ?, ?/).map {|e| ":#{e}"}.join(",")
+      cols = @columns.split(DELIMITER).map {|e| ":#{e}"}.join(",")
       @stmts[@table] = @db.prepare "INSERT INTO #{@table}(#{@columns}) VALUES(#{cols})"
     end
   end
 
   def to_insert(table, columns)
-    cols = columns.split(/ *, */).map {|e| ":#{e}"}.join(",")
+    cols = columns.split(DELIMITER).map {|e| ":#{e}"}.join(",")
     "INSERT INTO #{table}(#{columns}) VALUES(#{cols})"
   end
 
@@ -53,16 +56,17 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
         return
       end
       table = (@table or tag.slice(@type.length + 1, tag.length))
+      if @includes
+        (record.keys - @includes.split(DELIMITER)).each {|e| record.delete e}
+      end
+      if @excludes
+        @excludes.split(DELIMITER).each {|e| record.delete e}
+      end
       unless @stmts[table]
         cols = record.keys.join ","
         @db.execute "CREATE TABLE IF NOT EXISTS #{table} (id INTEGER PRIMARY KEY AUTOINCREMENT,#{cols})"
         @stmts[table] = @db.prepare (a = to_insert(table, cols))
         $log.debug "create a new table, #{table.upcase} (it may have been already created)"
-      end
-      if @excludes
-        @excludes.split(",").each do |e|
-          record.delete e
-        end
       end
       @stmts[table].execute record
     end
