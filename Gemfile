@@ -1,7 +1,3 @@
 source "http://rubygems.org"
 
-gem "sqlite3"
-
-group :test, :development do
-  gem "fluentd"
-end
+gem "sqlite3", ">=1.3.7"
