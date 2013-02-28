@@ -52,9 +52,11 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   def write(chunk)
     @db.transaction
     begin
-      write1(chrunk)
-    ensure
+      write1(chunk)
       @db.commit
+    rescue => ex
+      @db.rollback
+      $log.error "rollback: ", ex
     end
   end
 
