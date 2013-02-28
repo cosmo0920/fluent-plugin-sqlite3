@@ -50,6 +50,15 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
   end
 
   def write(chunk)
+    @db.transaction
+    begin
+      write1(chrunk)
+    ensure
+      @db.commit
+    end
+  end
+
+  def write1(chunk)
     chunk.msgpack_each do |tag, time, record|
       if record.keys.length == 0
         $log.warn "no any keys for #{tag}"
