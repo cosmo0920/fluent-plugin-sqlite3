@@ -94,3 +94,9 @@ Configuration
       retry_wait     1s
       num_threads    1
     </match>
+
+
+License
+-------
+[MIT License](blob/master/LICENSE.txt)
+
