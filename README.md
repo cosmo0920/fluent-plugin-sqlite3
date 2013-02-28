@@ -98,5 +98,5 @@ Configuration
 
 License
 -------
-[MIT License](blob/master/LICENSE.txt)
+[MIT License](LICENSE.txt)
 
