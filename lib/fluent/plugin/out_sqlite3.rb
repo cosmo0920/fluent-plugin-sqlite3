@@ -66,7 +66,7 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
         $log.warn "no any keys for #{tag}"
         return
       end
-      table = (@table or tag.slice(@type.length + 1, tag.length))
+      table = (@table or tag.split('.')[1]) # param 'table' or 2nd later part of tag.
       if @includes
         (record.keys - @includes.split(DELIMITER)).each {|e| record.delete e}
       end
