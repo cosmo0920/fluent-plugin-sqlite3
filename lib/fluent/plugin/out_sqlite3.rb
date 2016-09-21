@@ -57,6 +57,7 @@ class Fluent::Sqlite3Output < Fluent::BufferedOutput
     rescue => ex
       @db.rollback
       $log.error "rollback: ", ex
+      raise
     end
   end
 
