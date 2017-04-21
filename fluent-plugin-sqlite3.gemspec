@@ -4,10 +4,10 @@ Gem::Specification.new do |s|
   s.date        = '2016-09-22'
   s.summary     = "fluentd output to sqlite3"
   s.description = "fluentd output to sqlite3"
-  s.authors     = ["Tomotaka Sakuma"]
-  s.email       = 'ktmtmks@gmail.com'
+  s.authors     = ["Tomotaka Sakuma", "Hiroshi Hatake"]
+  s.email       = ['ktmtmks@gmail.com', 'cosmo0920.oucc@gmail.com']
   s.files       = ["lib/fluent/plugin/out_sqlite3.rb"]
-  s.homepage    = 'https://github.com/tmtk75/fluent-plugin-sqlite3.git'
+  s.homepage    = 'https://github.com/cosmo0920/fluent-plugin-sqlite3.git'
 
   s.add_dependency "fluentd", [">= 0.14.15", "< 2"]
   s.add_dependency "sqlite3", ">= 1.3.7"
