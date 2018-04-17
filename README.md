@@ -8,6 +8,12 @@ Fluent::Sqlite3Output
 ### Required gems
 - sqlite3
 
+### Requirements
+
+| fluent-plugin-sqlite3  | fluentd | ruby |
+|-------------------|---------|------|
+| >= 1.0.1 | >= v0.14.15 | >= 2.1 |
+|  < 1.0.1 | >= v0.12.0 | >= 1.9 |
 
 Getting started
 ---------------
