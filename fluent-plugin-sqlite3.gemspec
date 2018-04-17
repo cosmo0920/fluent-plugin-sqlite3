@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'fluent-plugin-sqlite3'
-  s.version     = '1.0.0'
-  s.date        = '2016-09-22'
+  s.version     = '1.0.1'
+  s.date        = '2018-04-17'
   s.summary     = "fluentd output to sqlite3"
   s.description = "fluentd output to sqlite3"
   s.authors     = ["Tomotaka Sakuma"]
