@@ -6,6 +6,8 @@ class Fluent::Plugin::Sqlite3Output < Fluent::Plugin::Output
 
   DEFAULT_BUFFER_TYPE = "memory"
 
+  helpers :compat_parameters
+
   config_param :path,     :string
   config_param :table,    :string, :default => nil
   config_param :columns,  :string, :default => nil
@@ -21,6 +23,7 @@ class Fluent::Plugin::Sqlite3Output < Fluent::Plugin::Output
   end
 
   def configure(conf)
+    compat_parameters_convert(conf, :buffer)
     super
     @type = conf["type"]
     if (@table and not(@columns)) or (not(@table) and @columns)
