@@ -1,10 +1,12 @@
 require 'fluent/test'
+require 'fluent/test/driver/output'
+require 'fluent/test/helpers'
 require 'fluent/plugin/out_sqlite3'
 require 'fileutils'
 
-$log = Object.new.instance_eval {|obj| def method_missing(method, *args); end; self }
-
 class Fluent::Sqlite3OutputTest < Test::Unit::TestCase
+  include Fluent::Test::Helpers
+
   def setup
     Fluent::Test.setup
     @db = ::SQLite3::Database.new DBPATH
@@ -22,9 +24,10 @@ class Fluent::Sqlite3OutputTest < Test::Unit::TestCase
 
   TAG = 'test.records'
 
-  def create_driver(conf=CONFIG, tag=TAG)
-    Fluent::Test::BufferedOutputTestDriver.new(Fluent::Sqlite3Output, tag) {
+  def create_driver(conf=CONFIG)
+    Fluent::Test::Driver::Output.new(Fluent::Plugin::Sqlite3Output) {
       def start
+        super
       end
     }.configure(conf)
   end
@@ -39,16 +42,18 @@ class Fluent::Sqlite3OutputTest < Test::Unit::TestCase
 
   def test_format
     d = create_driver
-    time = Time.now.to_i
-    d.emit({'record' => 'message', 'value' => 0.12}, time)
-    d.expect_format [TAG, time, {'record' => 'message', 'value' => 0.12}].to_msgpack
-    d.run
+    time = event_time
+    d.run(default_tag: TAG, shutdown: false) do
+      d.feed(time, {'record' => 'message', 'value' => 0.12})
+    end
+    assert_equal [TAG, time, {'record' => 'message', 'value' => 0.12}].to_msgpack, d.formatted[0]
   end
 
   def test_write
     d = create_driver
-    d.emit({'record' => 'message', 'value' => 0.12})
-    d.run
+    d.run(default_tag: TAG, shutdown: false) do
+      d.feed({'record' => 'message', 'value' => 0.12})
+    end
     doc = get_documents(d)
     assert_equal [[1, 'message', 0.12]], doc
   end
