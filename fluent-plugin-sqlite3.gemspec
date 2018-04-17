@@ -13,5 +13,5 @@ Gem::Specification.new do |s|
   s.add_dependency "sqlite3", ">= 1.3.7"
   s.add_development_dependency "test-unit", "~> 3.2.0"
   s.add_development_dependency "rake", "~> 12.0.0"
-  s.add_development_dependency "bundler", "~> 1.13.0"
+  s.add_development_dependency "bundler", "~> 1.13"
 end
