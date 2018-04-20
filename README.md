@@ -20,7 +20,7 @@ Getting started
 Add a following directive to fluent.conf and launch fluentd.
 
     <match sqlite3.**>
-      type sqlite3
+      @type sqlite3
       path test.db
     </match>
 
@@ -51,7 +51,7 @@ If a schema you use is already fixed, you can use `strict mode`.
 In the case, `table` and `columns` parameters should be used.
 
     <match sqlite3.**>
-      type    sqlite3
+      @type    sqlite3
       path    test.db
       table   persons
       columns name, age, country
@@ -70,7 +70,7 @@ Configuration
 ### For old style
 
     <match sqlite3.**>
-      type sqlite3
+      @type sqlite3
       path test.db
 
       ## strict mode
@@ -107,7 +107,7 @@ Configuration
 ### For brand new structured style
 
     <match sqlite3.**>
-      type sqlite3
+      @type sqlite3
       path test.db
 
       ## strict mode
